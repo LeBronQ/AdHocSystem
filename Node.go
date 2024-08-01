@@ -7,6 +7,6 @@ type Position struct {
 }
 
 type Node struct {
-	ID  int64
+	ID  int
 	Pos Position
 }

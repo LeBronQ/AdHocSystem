@@ -1,6 +1,8 @@
 package AdHocSystem
 
-import "sort"
+import (
+	"sort"
+)
 
 func GenerateRNGGraph(points []Node) [][]int {
 	n := len(points)
@@ -20,7 +22,7 @@ func GenerateRNGGraph(points []Node) [][]int {
 		for j := i + 1; j < n; j++ {
 			if adjMatrix[i][j] == 1 {
 				for k := 0; k < n; k++ {
-					if k != i && k != j && adjMatrix[i][k] == 1 && adjMatrix[j][k] == 1 {
+					if k != i && k != j {
 						if Distance(points[i], points[j]) >= max(Distance(points[i], points[k]), Distance(points[j], points[k])) {
 							adjMatrix[i][j] = 0
 							adjMatrix[j][i] = 0
@@ -51,6 +53,7 @@ func MSTWithDegreeLimit(points []Node, maxDegree int) [][]int {
 	degree := make([]int, n)
 	for i := 0; i < n; i++ {
 		degree[i] = 0
+		adjMatrix[i] = make([]int, n)
 	}
 	for i := 0; i < n; i++ {
 		for j := i + 1; j < n; j++ {
@@ -67,12 +70,27 @@ func MSTWithDegreeLimit(points []Node, maxDegree int) [][]int {
 				set.Union(u, v)
 				degree[u]++
 				degree[v]++
-				adjMatrix[u] = append(adjMatrix[u], v)
-				adjMatrix[v] = append(adjMatrix[v], u)
+				adjMatrix[u][v] = 1
+				adjMatrix[v][u] = 1
 			}
 		}
 		if cnt == n-1 {
 			break
+		}
+	}
+	rng := GenerateRNGGraph(points)
+	for i := 0; i < n; i++ {
+		if degree[i] < maxDegree {
+			for j := 0; j < n; j++ {
+				if i != j {
+					if rng[i][j] == 1 && adjMatrix[i][j] == 0 && degree[j] < maxDegree && degree[i] < maxDegree {
+						adjMatrix[i][j] = 1
+						adjMatrix[j][i] = 1
+						degree[i]++
+						degree[j]++
+					}
+				}
+			}
 		}
 	}
 	return adjMatrix

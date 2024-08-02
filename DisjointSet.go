@@ -5,6 +5,7 @@ type DisjointSet struct {
 }
 
 func (set *DisjointSet) InitTree(n int) {
+	set.Tree = make([]int, n)
 	for i := 0; i < n; i++ {
 		set.Tree[i] = i
 	}
